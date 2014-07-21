@@ -1,0 +1,32 @@
+.log {
+    border-collapse: collapse;
+    border: 2px solid black;
+    font-family: Verdana;
+    font-size: 9px;
+    width: 100%;
+    border: 1px solid red;
+}
+.log td {
+    border: 1px solid black;
+    padding: 3px;
+}
+.ns_ad_event {
+    font-weight: bold;
+}
+.addb-item {
+    padding: 3px;
+    border: 0;
+    border-radius: 3px;
+    background-color: #FF7151;
+    display: inline-block;
+    margin: 0 3px 3px 0;
+}
+.addb-item .red {} .addb-item .green {
+    font-weight: bold;
+}
+
+
+.main-info {
+    text-align: right;
+    padding: 5px;
+}
