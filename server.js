@@ -6,7 +6,7 @@ var fs = require("fs");
 var _builder = require("./builder.js");
 
 app.use(express.static(__dirname));
-app.use("/lib", express.static('../tag/ie11/src'));
+app.use("/lib", express.static(_builder.getBranchPath() + 'src/'));
 
 console.log(__dirname + '../tag/ie11/src');
 

@@ -14,7 +14,8 @@ function File(folder, name) {
 }
 
 function loadFile(file) {
-    var path = '../tag/ie11/' + file.folder + '/' + file.name;
+    var path = _settings.branchPath  + file.folder + '/' + file.name;
+    console.log('path -->',path);
     var content = fs.readFileSync(path);
 
     file.text = (content + "").replace('#{VERSION}', '4');
@@ -60,6 +61,9 @@ function getC2(url) {
 
 module.exports = {
 
+    getBranchPath: function() {
+        return _settings.branchPath;
+    },
     buildRsJs: function (c2) {
         var text = '//= require "youngman"';
         var file = new File('src', 'rs.js');
@@ -71,11 +75,12 @@ module.exports = {
         loadRequires(file);
         var source = file.source;
 
-        var setting = _settings[c2];
+        var setting = _settings.rsFilesettings.settings[c2];
         if (!setting) {
-            setting = _settings['default'];
+            setting = _settings.rsFilesettings.settings['default'];
         }
-        source = source.replace('%SETTINGS%', JSON.stringify(setting));
+        source = source.replace(/,\s*pixelURL[\s\S]*BETA_SVC_URL\s*=\s*\S*/ig, _settings.rsFilesettings.locals);
+        source = source.replace(/\{\s*b:\s*"CSV_BSL_CAMPAIGN_IDS"[\s\S]*y: 1\s*\}/ig, JSON.stringify(setting, null, "\t"));
 
         return source;
 
