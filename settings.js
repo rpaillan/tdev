@@ -1,8 +1,6 @@
-var branchPath = "C:/Users/eaperez/workspace/vce/branches/ie11/";
 
 var Settings = {
-    rsFilesettings : {},
-    branchPath : branchPath
+    rsFilesettings : {}
 };
 
 Settings.rsFilesettings.settings = {
@@ -37,6 +35,21 @@ Settings.rsFilesettings.settings = {
         d: 0,
         y: 1
     },
+    "7777": {
+        b: "",
+        l: "",
+        x: "7777",
+        i: "/.+/",
+        g: "",
+        v: "",
+        m: "vce_st,bsl,bsl_lf",
+        c: "7777",
+        w: '',
+        n: '',
+        s: 0,
+        d: 0,
+        y: 1
+    },
 
     "default": {
         b: "",
@@ -57,7 +70,7 @@ Settings.rsFilesettings.settings = {
 
 Settings.rsFilesettings.locals = ""+
   ", scorecardlocal = '/scorecardresearch.com'\n\
-  , isLocalTesting =  d.URL.match(/localhost/) || d.URL.match(/office.comscore.com/)\n\
+  , isLocalTesting =  d.URL.match(/localhost/) || d.URL.match(/.office./)\n\
   , pixelURL     = (isLocalTesting ? scorecardlocal : bscorpfx+scorecard)+'/p?'\n\
   , RPC_SVC_URL  = (isLocalTesting ? scorecardlocal : ascorpfx+scorecard)+'/rpc.flow?'\n\
   , CODE_SVC_URL = (isLocalTesting ? scorecardlocal : bscorpfx+scorecard)+'/rs/'\n\

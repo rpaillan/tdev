@@ -1,29 +1,56 @@
-var express = require('express');
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var fs = require("fs");
+
+var fs = require("fs"),
+    path = require('path'),
+    Http = require('http'),
+    Socketio = require('socket.io'),
+    Express = require('express');
+
+
+var app = Express();
+var http = Http.Server(app);
+var http2 = Http.Server(app);
+var io = Socketio(http);
+
+
+var config = {
+    'server_port': 3000,
+    'tag_project': '../tag/ie11',
+    'sandbox': '../sandbox'
+};
+
+// normalize
+var appHome = path.normalize(__dirname + '/app');
+var swfHome = path.normalize(__dirname + '/' + config.tag_project + '/src');
+config.tag_project = path.normalize(__dirname + '/' + config.tag_project);
+config.sandbox = path.normalize(__dirname + '/' + config.sandbox);
+
+
+console.log('config.sandbox -->',config.tag_project);
+console.log('config.sandbox -->',config.sandbox);
+console.log('swfHome -->', swfHome);
+
 var _builder = require("./builder.js");
+_builder.setConfig(config);
 
-app.use(express.static(__dirname));
-app.use("/lib", express.static(_builder.getBranchPath() + 'src/'));
+var logger = function(req, res, next) {
+    console.log("REQ: ", req.path);
+    next();
+};
 
-console.log(__dirname + '../tag/ie11/src');
+app.all("*", logger);
 
-app.get('lib/lt.swf', function(req, res) {
-    var file = req.params.file;
-    res.sendfile(file + '.html');
-});
+app.use("/lib", Express.static(swfHome));
+app.use("/sandbox", Express.static(config.sandbox));
+app.use("/app", Express.static(appHome));
+
 app.get('/b.voicefive.com/c2/:c2/rs.js', function(req, res) {
     var c2 = req.params.c2;
-    console.log('c2 -->', c2);
     var rsSource = _builder.buildRsJs(c2);
     sendJs(res, rsSource);
 });
 
 app.get('/scorecardresearch.com/rs/:jsfile', function(req, res) {
     var jsFile = req.params.jsfile;
-    console.log('jsFile -->', jsFile);
     var rsSource = _builder.buildJs(jsFile);
     sendJs(res, rsSource);
 });
@@ -46,8 +73,13 @@ io.on('connection', function(socket) {
     });
 });
 
-http.listen(3000, function() {
-    console.log('listening on *:3000');
+http.listen(config.server_port, function() {
+    console.log('listening on *:' + config.server_port);
+});
+
+var additionalPort = parseInt(config.server_port, 10) + 1;
+http2.listen(additionalPort, function() {
+    console.log('listening on *:' + additionalPort);
 });
 
 function sendJs(res, jsSource) {

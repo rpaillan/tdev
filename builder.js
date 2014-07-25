@@ -5,6 +5,7 @@ var bigSrc = "";
 var requireRegex = /= require \"([_.\/a-zA-Z]+)\"/g;
 var fileStore = {};
 var mainFile = null;
+var config;
 
 function File(folder, name) {
     this.folder = folder;
@@ -14,8 +15,7 @@ function File(folder, name) {
 }
 
 function loadFile(file) {
-    var path = _settings.branchPath  + file.folder + '/' + file.name;
-    console.log('path -->',path);
+    var path = config.tag_project + '/' + file.folder + '/' + file.name;
     var content = fs.readFileSync(path);
 
     file.text = (content + "").replace('#{VERSION}', '4');
@@ -50,21 +50,20 @@ function loadRequires(file) {
 
 function getC2(url) {
     var c2 = '9999';
-
     var match = url.match(/c2\/([0-9]+)\/rs\.js/);
     if (match && match.length > 1) {
         c2 =  match[1];
     }
-    console.log("c2 ", url,  c2);
     return c2;
 }
 
 module.exports = {
 
-    getBranchPath: function() {
-        return _settings.branchPath;
+    setConfig: function(cfg) {
+        config = cfg;
     },
     buildRsJs: function (c2) {
+        
         var text = '//= require "youngman"';
         var file = new File('src', 'rs.js');
         file.text = text;
