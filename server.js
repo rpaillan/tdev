@@ -11,18 +11,14 @@ var http = Http.Server(app);
 var http2 = Http.Server(app);
 var io = Socketio(http);
 
-
-var config = {
-    'server_port': 3000,
-    'tag_project': '../tag/ie11',
-    'sandbox': '../sandbox'
-};
+var c = fs.readFileSync('../config.json');
+var config = JSON.parse(c);
 
 // normalize
 var appHome = path.normalize(__dirname + '/app');
-var swfHome = path.normalize(__dirname + '/' + config.tag_project + '/src');
-config.tag_project = path.normalize(__dirname + '/' + config.tag_project);
-config.sandbox = path.normalize(__dirname + '/' + config.sandbox);
+var swfHome = path.normalize(config.tag_project + '/src');
+config.tag_project = path.normalize(config.tag_project);
+config.sandbox = path.normalize(config.sandbox);
 
 
 console.log('config.sandbox -->',config.tag_project);

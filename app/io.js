@@ -1,6 +1,6 @@
 (function(tdev){
 
-    var URL = 'http://csclrpaillan.office.comscore.com:3000',
+    var URL = location.origin,
         socket = io(URL);
 
     tdev.io = socket;

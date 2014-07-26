@@ -28,8 +28,6 @@
 .addb-item .red {} .addb-item .green {
     font-weight: bold;
 }
-
-
 .main-info {
     text-align: right;
     padding: 5px;
@@ -80,4 +78,63 @@ body {
     border-radius: 3px;
     margin: 3px;
     padding: 2px; 
+}
+
+.c-table {
+    font-family: sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-size: 9px;
+    width: auto;
+    overflow: auto;
+    display: block;
+}
+.c-table td {
+    padding: 3px 5px;
+    color: white;
+}
+.h-table {
+    font-family: sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-size: 9px;
+    width: auto;
+    overflow: auto;
+    display: block;
+}
+.h-table td {
+    padding: 3px 5px;
+    color: white;
+}
+#tooltip-container {
+    position: absolute;
+    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    z-index: 9999;
+}
+.tooltip {
+    display: inline-flex;
+    overflow: hidden;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.tooltip {
+    background: #333;
+    background: rgba(0, 0, 0, .8);
+    border-radius: 5px;
+    color: #fff;
+    padding: 5px 15px;
+}
+.histo {
+    max-height: 400px;
+    width: 150px;
+    overflow-y: auto;
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-left-color: white;
+    margin-left: 10px;
+    padding-left: 10px;
+}
+
+#canvas {
+    height: 600px;
 }

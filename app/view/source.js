@@ -7,14 +7,9 @@
     }
 
     // Classes
-    include("namespace.js");
-    include("main.js");
-    include("io.js");
-
-    // modules
-    include("gridv/source.js");
-    include("grid/source.js");
-    include("test/source.js");
-    include("view/source.js");
+    include("util.js");
+    include("adMap.js");
+    include("index.js");
+    include("adTooltip.js");
 
 })();
