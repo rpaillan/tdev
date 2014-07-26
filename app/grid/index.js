@@ -6,7 +6,6 @@
     var ad_db_params = "browser name|timezoneOffset|navigator.platform|number of plugins|history length|build id|browser language|CPU class|System Language|User Language|Vendor|Mouse position|Scroll Offset|Value of SafeFrame's inViewPercentage API|<Opacity><Refresh value><Focus state><isReferrer><activeX enabled><java Enabled><Flash available><Mouse moved><Click><Press><Resize><scroll><z index><Pepper Flash enabled>";
     ad_db_params = ad_db_params.split('|');
     ad_db_params[ad_db_params.length - 1] = ad_db_params[ad_db_params.length - 1].replace(/></g, '|').replace('<', '').replace('>', '').split('|');
-    console.log('ad_db_params -->', ad_db_params);
     var colors = ["#9877ae", "#45bece", "#41d8ba", "#afabf9", "#83838b", "#5e9fbe", "#91c873", "#fe6baf", "#ffba00", "#ff6633", "#d84819", "#54a57a", "#d0ab99", "#fb8801", "#ffd35c"];
     var colorIndex = 0;
     var colorMap = {};
@@ -49,7 +48,7 @@
 
     function render(req) {
         var q = req.query;
-        console.log('q -->', q);
+        //console.log('q -->', q);
         var adId = q.ns__p || q.ns__t;
         if (!colorMap[adId]) {
             if (colorIndex == colors.length - 1) colorIndex = 0;

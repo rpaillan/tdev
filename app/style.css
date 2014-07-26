@@ -6,13 +6,16 @@
     width: 100%;
     border: 1px solid red;
 }
+
 .log td {
     border: 1px solid black;
     padding: 3px;
 }
+
 .ns_ad_event {
     font-weight: bold;
 }
+
 .addb-item {
     padding: 3px;
     border: 0;
@@ -21,6 +24,7 @@
     display: inline-block;
     margin: 0 3px 3px 0;
 }
+
 .addb-item .red {} .addb-item .green {
     font-weight: bold;
 }
@@ -29,4 +33,51 @@
 .main-info {
     text-align: right;
     padding: 5px;
+}
+
+body {
+    font-size: 10px;
+    font-family: Verdana;
+}
+
+.logsv {
+    border: 2px solid black;
+    vertical-align: top;
+}
+
+.logsv .ad {
+    border: 1px solid red;
+    margin: 5px;
+    width: 300PX;
+    display: inline-block;
+}
+
+.logsv .ad .title {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+.logsv .ad .attr {
+    word-wrap: break-word;
+}
+.logsv .ad .attr .name {
+    margin-right: 4px;
+    font-weight: bold;
+}
+
+.logsv .ad .attr .value {
+    width: 100%;
+    word-wrap: break-word;
+}
+
+.logsv .ad .attr .value.inline {
+    display: inline;
+}
+
+.logsv .ad .attr .value .vvalue {
+    background-color: pink;
+    border-radius: 3px;
+    margin: 3px;
+    padding: 2px; 
 }
