@@ -9,7 +9,7 @@
     var colors = ["#9877ae", "#45bece", "#41d8ba", "#afabf9", "#83838b", "#5e9fbe", "#91c873", "#fe6baf", "#ffba00", "#ff6633", "#d84819", "#54a57a", "#d0ab99", "#fb8801", "#ffd35c"];
     var colorIndex = 0;
     var colorMap = {};
-    var attrs = ['ns_ad_event', 'ns_ad_zm', 'ns_ad_db', 'ns__t', 'ns__p', 'c1', 'c2', 'c3', 'ns_ce_mod', 'c7', 'c8', 'ns_ad_sz', 'ns_type', 'ns_ad_sd'];
+    var attrs = ['ns_ad_event', 'ns_ad_zm', 'ns_ad_db', 'ns__t', 'ns__p', 'c1', 'c2', 'c3', 'ns_ce_mod', 'c7', 'c8', 'ns_ad_sz', 'ns_type', 'ns_ad_sd', 'ns_ad_vw'];
 
     function renderAdDb(addb) {
         if (addb.indexOf('|') == -1) return null;
