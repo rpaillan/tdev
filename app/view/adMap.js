@@ -12,15 +12,18 @@
     };
 
     AdVisualizer.prototype.getZoomedValue = function(value) {
-        if (value && typeof value === 'object') {
+        var zoomedValue = value;
+        if (zoomedValue && typeof zoomedValue === 'object') {
+            zoomedValue = Object.create(Object.prototype);
             for (var property in value) {
                 if (value[property]) {
-                    value[property] = value[property] * this.zoomFactor;
+                    zoomedValue[property] = value[property] * this.zoomFactor;
+                    //zoomedValue[property] = zoomedValue[property] * this.zoomFactor;
                 }
             }
-            return value;
+            return zoomedValue;
         }
-        return value * this.zoomFactor;
+        return zoomedValue * this.zoomFactor;
     };
 
     AdVisualizer.prototype.clearCanvas = function(context) {
@@ -33,11 +36,11 @@
         this.context = this.canvas.getContext('2d');
         this.clearCanvas(this.context);
         this.calculateZoomFactor(size,border);
-        size = this.getZoomedValue(size);
-        this.canvas.width = size.width + 500;
-        this.canvas.height = size.height + border;
+        var zoomedSize = this.getZoomedValue(size);
+        this.canvas.width = zoomedSize.width + 500;
+        this.canvas.height = zoomedSize.height + border;
 
-        this.drawGrid('lightgray', 10, 10, size);
+        this.drawGrid('lightgray', 10, 10, zoomedSize);
 
         function getMousePos(canvas, evt) {
             var rect = canvas.getBoundingClientRect();
@@ -52,8 +55,8 @@
             for (var ad in that.adMap) {
                 var onAdd = false;
                 var lastValue = that.adMap[ad][that.adMap[ad].length - 1];
-                if(mousePos.x > lastValue.position.x && mousePos.x < lastValue.size.width + lastValue.position.x){
-                    if(mousePos.y > lastValue.position.y && mousePos.y < lastValue.size.height + lastValue.position.y){
+                if(mousePos.x > lastValue.position.x && mousePos.x < lastValue.zoomedSize.width + lastValue.position.x){
+                    if(mousePos.y > lastValue.position.y && mousePos.y < lastValue.zoomedSize.height + lastValue.position.y){
                         onAdd = true;
                     }
                 }             
@@ -272,9 +275,6 @@
         if(qp60){
             this.drawQpIcon(offsetX, offsetY, width, height);
         }
-
-        
-
     };
 
     AdVisualizer.prototype.drawQpIcon = function(x, y, width, height) {
@@ -298,6 +298,7 @@
             viewPortPosition = this.getPositionValue(query.ns_ad_sc);
 
             this.initCanvas(canvas, pageSize,60);
+            this.addMeasures({x:0,y:0}, this.getZoomedValue(pageSize), pageSize, '#f0371e', '#f0371e', '10px Arial', 40);
 
             if (query.ns_ad_event && query.ns_ad_vad) {
                 var ad = {};
@@ -310,6 +311,9 @@
                 }
 
                 if(this.adMap[query.ns_ad_id]){
+                    if(query.ns_ad_event === 'load') {
+                        this.adMap[query.ns_ad_id] = [];    
+                    }
                     this.adMap[query.ns_ad_id].push(ad);    
                 }
             }
