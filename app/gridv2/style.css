@@ -1,0 +1,38 @@
+.logsv2 {
+    border-collapse: collapse;
+    font-size: 9px;
+    width: 100%;
+}
+.logsv2 th {
+    text-transform: uppercase;
+    border: 1px solid black;
+    padding:4px;
+    font-weight: bold;
+}
+
+.logsv2 td {
+    border: 1px solid black;
+    padding:4px;
+}
+
+.logsv2 td:first-child .attr {
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.undefined {
+    background-color: #999;
+}
+
+.revision span {
+    background-color: orange;
+    display: inline-block;
+    border-radius: 3px;
+    padding: 1px 5px;
+    margin-bottom: 2px;
+    margin-right: 3px;
+}
+
+.revision-item {
+    word-break: break-all;
+}

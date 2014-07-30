@@ -3,13 +3,13 @@ var http = require('http');
 var net = require('net');
 var url =  require('url');
 var port = 8080;
-var debugging = 0;
+var debugging = 1;
 var regex_hostport = /^([^:]+)(:([0-9]+))?$/;
 
 // handle a HTTP proxy request
 function httpHandler(req, res) {
     capture(req);
-    if (debugging) console.log('req', req.url);
+    if (debugging) console.log('req', req.url.substr(0, 80));
     var httpVersion = req['httpVersion'];
     var hostport = getHostPortFromString(req.headers['host'], 80);
     // have to extract the path from the requested URL
@@ -56,7 +56,7 @@ function httpHandler(req, res) {
 
 function httpsHandler(req, socketRequest, bodyhead) {
     capture(req);
-    if (debugging) console.log('req', req.url);
+    if (debugging) console.log('req', req.url.substr(0, 80));
     var url = req['url'];
     var httpVersion = req['httpVersion'];
     var hostport = getHostPortFromString(url, 443);
@@ -126,10 +126,9 @@ function capture(req) {
     });
 }
 
-
 module.exports = {
-    listen: function(port) {
-        server.listen(port);
+    listen: function(port, callback) {
+        server.listen(port, callback);
     },
     capture: function(pattern, callback) {
         filters.push({
