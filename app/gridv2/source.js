@@ -8,5 +8,8 @@
 
     // Classes
     include("index.js");
+    include("ad.js");
+    include("row.js");
+    include("cell.js");
 
 })();

@@ -1,20 +1,28 @@
-(function(tdev) {
+(function(app, module) {
 
-    var attrStore = tdev.attrStore = [];
-    var adStore = {};
-    var ii = 0;
-    function foreachAttr(f) {
+    var attrStore = module.attrStore =  app.attrStore = [];
+    var attrStoreRow = module.attrStoreRow = {};
+    var adStore = module.adStore  ={};
+
+    module.foreachAttr = function _foreachAttr_ (f) {
         for (var i = 0, len = attrStore.length; i < len; i++) {
-            f(attrStore[i]);
+            f(i, attrStore[i], attrStoreRow[attrStore[i]]);
         }
-    }
+    };
 
-    tdev.on('app-init', function() {
-        var tab = tdev.newTab("Log Vertical 2");
-        prepareTable(tab);
+    app.on('app-init', function() {
+        var tab = app.newTab("Log Vertical 2");
+
+        module.view = {};
+        module.view.table = $('<table class="logsv2"><thead><tr class="head"><th>attr / ad</th></tr></thead><tbody class="body"></tbody></table>');
+        module.view.head = module.view.table.find('.head');
+        module.view.body = module.view.table.find('.body');
+
+        module.view.table.appendTo(tab);
     });
 
-    tdev.on('req-received', function(e, req) {
+
+    app.on('req-received', function(e, req) {
         findAttrs(req);
         if (isNewAd(req)) {
             addNewAd(req);
@@ -29,12 +37,23 @@
         for (var attr in q) {
             if (attrStore.indexOf(attr) === -1) {
                 attrStore.push(attr);
+                attrStoreRow[attr] = new module.Row(attr);
             }
         }
         attrStore.sort(function(a, b) {
             return a.localeCompare(b, 'kn', { "numeric": true });
         });
+        renderRows();
     }
+
+    function renderRows() {
+        module.foreachAttr(function(i, attr, row) {
+            if (!row.exist()) {
+                row.render();
+            }
+        });
+    }
+
 
     function isNewAd(req) {
         var q = req.query,
@@ -48,7 +67,7 @@
         var q = req.query,
             id = q.ns__p || q.ns__t;
 
-        var ad = new Ad(id);
+        var ad = new module.Ad(id);
         ad.render();
 
         ad.update(req);
@@ -72,58 +91,9 @@
         }
     }
 
-    function prepareTable(container) {
-        var html = $('<div class="logsv2"></div>');
-        html.appendTo(container);
-    }
+    
 
     
-    var Ad = function(id) {
-        this.event = '--';
-        this.id = id;
-        this.el = null;
-        this.titleEl = null;
-        this.attrs = {};
-    };
-
-    Ad.prototype.render = function() {
-        this.el = $('<div class="ad">');
-        this.titleEl =  $('<div class="title" />').text(this.id + ' :: ' + this.event).appendTo(this.el);
-        $('.logsv2').append(this.el);
-    };
-
-    Ad.prototype.dispose = function() {
-        for (var attr in this.attrs) {
-            if (this.attrs[attr] && this.attrs[attr].dispose) {
-                this.attrs[attr].dispose();
-            }
-        }
-        this.el.empty();
-        this.el.remove();
-        this.el = null;
-        this.attrs = null;
-    };
-
-    Ad.prototype.update = function(req) {
-        this.event = req.query.ns_ad_event || '--';
-        var me = this;
-        foreachAttr(function(attr) {
-            me.updateAttr(attr, req.query[attr]);
-        });
-        if (this.titleEl) {
-            this.titleEl.text(this.id + ' :: ' + this.event);
-        }
-    };
-
-    Ad.prototype.updateAttr = function(attr, value) {
-        if (!this.attrs[attr]) {
-            var oAttr = new Attr(attr, value, this);
-            this.attrs[attr] = oAttr;
-        }
-        if (value !== undefined) {
-            this.attrs[attr].update(value);
-        }
-    };
 
     var Attr = function(attr, value, ad) {
         this.updates = 0;
@@ -201,4 +171,4 @@
         this.ad = null;
     };
 
-})(TDev);
+})(TDev, TDev.GridV2 = {});
