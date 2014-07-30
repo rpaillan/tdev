@@ -12,28 +12,35 @@
     };
 
     AdVisualizer.prototype.getZoomedValue = function(value) {
-        if (value && typeof value === 'object') {
+        var zoomedValue = value;
+        if (zoomedValue && typeof zoomedValue === 'object') {
+            zoomedValue = Object.create(Object.prototype);
             for (var property in value) {
                 if (value[property]) {
-                    value[property] = value[property] * this.zoomFactor;
+                    zoomedValue[property] = value[property] * this.zoomFactor;
+                    //zoomedValue[property] = zoomedValue[property] * this.zoomFactor;
                 }
             }
-            return value;
+            return zoomedValue;
         }
-        return value * this.zoomFactor;
+        return zoomedValue * this.zoomFactor;
+    };
+
+    AdVisualizer.prototype.clearCanvas = function(context) {
+        context.clearRect ( 0 , 0 , 5000 , 5000 );
     };
 
     AdVisualizer.prototype.initCanvas = function(canvas, size, border) {
         var that = this;
         this.canvas = canvas;
         this.context = this.canvas.getContext('2d');
+        this.clearCanvas(this.context);
         this.calculateZoomFactor(size,border);
-        size = this.getZoomedValue(size);
-        this.context.clearRect ( 0 , 0 , size.width , size.height );
-        this.canvas.width = size.width + border;
-        this.canvas.height = size.height + border;
+        var zoomedSize = this.getZoomedValue(size);
+        this.canvas.width = zoomedSize.width + 500;
+        this.canvas.height = zoomedSize.height + border;
 
-        this.drawGrid('lightgray', 10, 10, size);
+        this.drawGrid('lightgray', 10, 10, zoomedSize);
 
         function getMousePos(canvas, evt) {
             var rect = canvas.getBoundingClientRect();
@@ -48,27 +55,49 @@
             for (var ad in that.adMap) {
                 var onAdd = false;
                 var lastValue = that.adMap[ad][that.adMap[ad].length - 1];
-                if(mousePos.x > lastValue.position.x && mousePos.x < lastValue.size.width + lastValue.position.x){
-                    if(mousePos.y > lastValue.position.y && mousePos.y < lastValue.size.height + lastValue.position.y){
+                if(mousePos.x > lastValue.position.x && mousePos.x < lastValue.zoomedSize.width + lastValue.position.x){
+                    if(mousePos.y > lastValue.position.y && mousePos.y < lastValue.zoomedSize.height + lastValue.position.y){
                         onAdd = true;
                     }
                 }             
                 if(onAdd) {
-                    tDev.TooltipRenderer.render(that.adMap[ad], that.canvas);
+                    //tDev.TooltipRenderer.render(that.adMap[ad], that.canvas);
                 } else {
-                    tDev.TooltipRenderer.hide();
+                    //tDev.TooltipRenderer.hide();
                 }  
             }
         }, false);
 
     };
 
+    AdVisualizer.prototype.getDarkColor = function (hex, percent) {
+        hex = hex.replace(/^\s*#|\s*$/g, '');
+
+        if(hex.length == 3){
+            hex = hex.replace(/(.)/g, '$1$1');
+        }
+
+        var r = parseInt(hex.substr(0, 2), 16),
+        g = parseInt(hex.substr(2, 2), 16),
+        b = parseInt(hex.substr(4, 2), 16);
+
+        var result = '#' + 
+        ((0|(1<<8) + r * (1 - percent / 100)).toString(16)).substr(1) +
+        ((0|(1<<8) + g * (1 - percent / 100)).toString(16)).substr(1) +
+        ((0|(1<<8) + b * (1 - percent / 100)).toString(16)).substr(1);
+        
+        return result;
+    };
+
+
     AdVisualizer.prototype.drawGrid = function(color, stepx, stepy, size) {
         this.context.save()
+        this.context.strokeStyle = color;
         this.context.fillStyle = 'white';
         this.context.fillRect(0, 0, size.width, size.height);
+        this.context.strokeRect(0, 0, size.width, size.height);
         this.context.lineWidth = 0.5;
-        this.context.strokeStyle = color;
+        
         for (var i = stepx + 0.5; i < size.width; i += stepx) {
             this.context.beginPath();
             this.context.moveTo(i, 0);
@@ -84,56 +113,73 @@
         this.context.restore();
     };
 
-    AdVisualizer.prototype.drawAd = function(position, size) {
+    AdVisualizer.prototype.drawAd = function(position, size, color) {
+        var color = color || 'blue';
+
         this.context.save();
         this.context.strokeStyle = 'black';
         this.context.globalAlpha = 0.5;
         this.context.lineWidth = 1;
-        this.context.fillStyle = 'blue';
+        //this.context.fillStyle = color;
+
+
+        //var grd = this.context.createRadialGradient(150,150,0,150,150,150);
+        var grd = this.context.createLinearGradient(0, 0, size.width, size.height);
+        grd.addColorStop(0,color);
+        grd.addColorStop(1,this.getDarkColor(color, 50));
+        this.context.fillStyle=grd;
+        
+
         this.context.fillRect(position.x, position.y, size.width, size.height);
         this.context.strokeRect(position.x, position.y, size.width, size.height);
         this.context.restore();
     };
 
-    AdVisualizer.prototype.addMeasures = function(adPosition, adSizeZoomed, adSize) {
+    AdVisualizer.prototype.addMeasures = function(elPosition, elSizeZoomed, elSize, lineColor, textColor, textFont, lineOffset) {
+        var lineColor = lineColor || 'red';
+        var textColor = textColor || 'black';
+        var lineOffset = lineOffset || 6;
+        var textFont = textFont || '9px Arial';
+        var tipSize = 6;
+
         this.context.save();
-        this.context.strokeStyle = 'red';
+        this.context.strokeStyle = lineColor;
         this.context.globalAlpha = 0.5;
         this.context.lineWidth = 1;
         
         //Horizontal Line
         this.context.beginPath();
-        this.context.moveTo(adPosition.x,adPosition.y + adSizeZoomed.height + 5);
-        this.context.lineTo(adPosition.x + adSizeZoomed.width, adPosition.y + adSizeZoomed.height + 5);
+        this.context.moveTo(elPosition.x,elPosition.y + elSizeZoomed.height + lineOffset);
+        this.context.lineTo(elPosition.x + elSizeZoomed.width, elPosition.y + elSizeZoomed.height + lineOffset);
         this.context.stroke();
         
-        this.context.moveTo(adPosition.x, adPosition.y + adSizeZoomed.height + 2);
-        this.context.lineTo(adPosition.x, adPosition.y + adSizeZoomed.height + 8);
+        this.context.moveTo(elPosition.x, elPosition.y + elSizeZoomed.height + (lineOffset - tipSize/2));
+        this.context.lineTo(elPosition.x, elPosition.y + elSizeZoomed.height + (lineOffset + tipSize/2));
         this.context.stroke();
 
-        this.context.moveTo(adPosition.x + adSizeZoomed.width, adPosition.y + adSizeZoomed.height + 2);
-        this.context.lineTo(adPosition.x + adSizeZoomed.width, adPosition.y + adSizeZoomed.height + 8);
+        this.context.moveTo(elPosition.x + elSizeZoomed.width, elPosition.y + elSizeZoomed.height + (lineOffset - tipSize/2));
+        this.context.lineTo(elPosition.x + elSizeZoomed.width, elPosition.y + elSizeZoomed.height + (lineOffset + tipSize/2));
         this.context.stroke();
 
         //Vertical Line
         this.context.beginPath();
-        this.context.moveTo(adPosition.x + adSizeZoomed.width + 5, adPosition.y);
-        this.context.lineTo(adPosition.x + adSizeZoomed.width + 5, adPosition.y + adSizeZoomed.height);
+        this.context.moveTo(elPosition.x + elSizeZoomed.width + lineOffset, elPosition.y);
+        this.context.lineTo(elPosition.x + elSizeZoomed.width + lineOffset, elPosition.y + elSizeZoomed.height);
         this.context.stroke();
         
-        this.context.moveTo(adPosition.x + adSizeZoomed.width + 2, adPosition.y);
-        this.context.lineTo(adPosition.x + adSizeZoomed.width + 8, adPosition.y);
+        this.context.moveTo(elPosition.x + elSizeZoomed.width + (lineOffset - tipSize/2), elPosition.y);
+        this.context.lineTo(elPosition.x + elSizeZoomed.width + (lineOffset + tipSize/2), elPosition.y);
         this.context.stroke();
 
-        this.context.moveTo(adPosition.x + adSizeZoomed.width + 2, adPosition.y + adSizeZoomed.height);
-        this.context.lineTo(adPosition.x + adSizeZoomed.width + 8, adPosition.y + adSizeZoomed.height);
+        this.context.moveTo(elPosition.x + elSizeZoomed.width + (lineOffset - tipSize/2), elPosition.y + elSizeZoomed.height);
+        this.context.lineTo(elPosition.x + elSizeZoomed.width + (lineOffset + tipSize/2), elPosition.y + elSizeZoomed.height);
         this.context.stroke();
 
         this.context.globalAlpha = 1;
-        this.context.font='9px Arial';
-        this.context.fillStyle = 'red';
-        this.context.fillText(adSize.width + ' px',adPosition.x + adSizeZoomed.width/2 - 10, adPosition.y + adSizeZoomed.height + 15);
-        this.context.fillText(adSize.height + ' px',adPosition.x + adSizeZoomed.width + 15, adPosition.y + adSizeZoomed.height/2);
+        this.context.font = textFont;
+        this.context.fillStyle = textColor;
+        this.context.fillText(elSize.width + ' px',elPosition.x + elSizeZoomed.width/2 - 10, elPosition.y + elSizeZoomed.height + (lineOffset + 12));
+        this.context.fillText(elSize.height + ' px',elPosition.x + elSizeZoomed.width + (lineOffset + 8), elPosition.y + elSizeZoomed.height/2);
         
         this.context.restore();        
     };
@@ -229,9 +275,6 @@
         if(qp60){
             this.drawQpIcon(offsetX, offsetY, width, height);
         }
-
-        
-
     };
 
     AdVisualizer.prototype.drawQpIcon = function(x, y, width, height) {
@@ -239,8 +282,8 @@
       this.context.globalAlpha = 1;
       this.context.beginPath();
       this.context.lineWidth = 1;
-      this.context.strokeStyle = '#BFFF00';
-      this.context.fillStyle = '#BFFF00';
+      this.context.strokeStyle = '#ffc703';
+      this.context.fillStyle = '#ffc703';
       this.context.fillRect(x, y, width, height);
       this.context.restore();
 
@@ -254,8 +297,9 @@
             viewPortSize = this.getSizeValue(query.ns_ad_vvd);
             viewPortPosition = this.getPositionValue(query.ns_ad_sc);
 
-            this.initCanvas(canvas, pageSize,20);
-            
+            this.initCanvas(canvas, pageSize,60);
+            this.addMeasures({x:0,y:0}, this.getZoomedValue(pageSize), pageSize, '#f0371e', '#f0371e', '10px Arial', 40);
+
             if (query.ns_ad_event && query.ns_ad_vad) {
                 var ad = {};
                 ad.size = this.getZoomedValue(this.getSizeValue(query.ns_ad_vad));
@@ -267,6 +311,9 @@
                 }
 
                 if(this.adMap[query.ns_ad_id]){
+                    if(query.ns_ad_event === 'load') {
+                        this.adMap[query.ns_ad_id] = [];    
+                    }
                     this.adMap[query.ns_ad_id].push(ad);    
                 }
             }
@@ -274,12 +321,13 @@
             viewPortSize = this.getZoomedValue(viewPortSize);
             viewPortPosition = this.getZoomedValue(viewPortPosition);
             this.drawviewPort(viewPortPosition, viewPortSize);
+            this.addMeasures(viewPortPosition, viewPortSize, this.getSizeValue(query.ns_ad_vvd), '#333333', '#333333', '10px Arial', 10);
             
             for (var ad in this.adMap) {
                 var lastValue = this.adMap[ad][this.adMap[ad].length - 1];
-                this.drawAd(lastValue.position, lastValue.size);
-                this.addMeasures(lastValue.position, lastValue.size, this.getSizeValue(lastValue.query.ns_ad_vad));
-                //this.addText(lastValue.position, lastValue.size, {text: '50%',fillStyle: 'white'});
+                this.drawAd(lastValue.position, lastValue.size, '#0C6395');
+                this.addMeasures(lastValue.position, lastValue.size, this.getSizeValue(lastValue.query.ns_ad_vad), '#0C6395', '#0C6395', '10px Arial', 6);
+                this.addText(lastValue.position, lastValue.size, {text: 'C2 = ' + lastValue.query.c2 ,fillStyle: 'white'});
                 this.showVisibility(this.adMap[ad]);
             }
         }
