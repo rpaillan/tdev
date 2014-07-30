@@ -1,0 +1,43 @@
+.logsv2 {
+    border: 2px solid black;
+    
+}
+
+.logsv2 .ad {
+    border: 1px solid red;
+    margin: 5px;
+    /* width: 300PX;*/
+    display: inline-block;
+    vertical-align: top;
+    padding: 5px;
+}
+
+.logsv2 .ad .title {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+.logsv2 .ad .attr {
+    word-wrap: break-word;
+}
+.logsv2 .ad .attr .name {
+    margin-right: 4px;
+    font-weight: bold;
+}
+
+.logsv2 .ad .attr .value {
+    width: 100%;
+    word-wrap: break-word;
+}
+
+.logsv2 .ad .attr .value.inline {
+    display: inline;
+}
+
+.logsv2 .ad .attr .value .vvalue {
+    background-color: pink;
+    border-radius: 3px;
+    margin: 3px;
+    padding: 2px; 
+}

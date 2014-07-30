@@ -35,13 +35,6 @@ console.log('swfHome -->', swfHome);
 var _builder = require("./builder.js");
 _builder.setConfig(config);
 
-var logger = function(req, res, next) {
-    console.log("REQ: ", req.path);
-    next();
-};
-
-app.all("*", logger);
-
 app.use("/lib", Express.static(swfHome));
 app.use("/sandbox", Express.static(config.sandbox));
 app.use("/app", Express.static(appHome));
@@ -94,10 +87,14 @@ function broadcast(data) {
     io.emit('onreq', data);
 }
 
-Proxy.listen(8080);
+Proxy.listen(8080, function() {
+    console.log('proxy listening on *:8080');
+});
+
 function proxySend (data) {
     broadcast(data);
 }
+
 Proxy.capture('scorecardresearch.com/p', proxySend);
 
 

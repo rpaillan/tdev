@@ -3,7 +3,7 @@
     var sBase = oHead.lastChild.src.replace(/\/?[^\/]+$/, ''); // presumably this script tag
     
     function include(sSrc) {
-        includeJs(sSrc, sBase);
+        document.write('<script src="' + sBase + '/' + sSrc + '"></script>');
     }
 
     // Classes
