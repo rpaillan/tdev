@@ -55,8 +55,8 @@
             for (var ad in that.adMap) {
                 var onAdd = false;
                 var lastValue = that.adMap[ad][that.adMap[ad].length - 1];
-                if(mousePos.x > lastValue.position.x && mousePos.x < lastValue.zoomedSize.width + lastValue.position.x){
-                    if(mousePos.y > lastValue.position.y && mousePos.y < lastValue.zoomedSize.height + lastValue.position.y){
+                if(mousePos.x > lastValue.position.x && mousePos.x < lastValue.size.width + lastValue.position.x){
+                    if(mousePos.y > lastValue.position.y && mousePos.y < lastValue.size.height + lastValue.position.y){
                         onAdd = true;
                     }
                 }             
@@ -212,6 +212,7 @@
     };
 
     AdVisualizer.prototype.getSizeValue = function(key) {
+        key = key || '0x0';
         var splitter = 'x';
         value = key.split(splitter);
         value = {
@@ -222,6 +223,7 @@
     };
 
     AdVisualizer.prototype.getPositionValue = function(key) {
+        key = key || '0x0';
         var splitter = 'x';
         value = key.split(splitter);
         value = {
