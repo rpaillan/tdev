@@ -1,10 +1,12 @@
 (function(tdev) {
 
-    var attrStore = {};
+    var attrStore = tdev.attrStore = [];
     var adStore = {};
-
+    var ii = 0;
     function foreachAttr(f) {
-        for (var attr in attrStore) f(attr);
+        for (var i = 0, len = attrStore.length; i < len; i++) {
+            f(attrStore[i]);
+        }
     }
 
     tdev.on('app-init', function() {
@@ -25,10 +27,13 @@
     function findAttrs(req) {
         var q = req.query;
         for (var attr in q) {
-            if (!attrStore[attr]) {
-                attrStore[attr] = 0;
+            if (attrStore.indexOf(attr) === -1) {
+                attrStore.push(attr);
             }
         }
+        attrStore.sort(function(a, b) {
+            return a.localeCompare(b, 'kn', { "numeric": true });
+        });
     }
 
     function isNewAd(req) {
@@ -44,12 +49,11 @@
             id = q.ns__p || q.ns__t;
 
         var ad = new Ad(id);
-        ad.update(req);
-
-        adStore[id] = ad;
-        console.log("NEW", id, q.ns_ad_event);
-
         ad.render();
+
+        ad.update(req);
+        console.log("NEW", id, q.ns_ad_event);
+        adStore[id] = ad;
     }
 
     function appendReq(req) {
@@ -73,6 +77,7 @@
         html.appendTo(container);
     }
 
+    
     var Ad = function(id) {
         this.event = '--';
         this.id = id;
@@ -85,9 +90,6 @@
         this.el = $('<div class="ad">');
         this.titleEl =  $('<div class="title" />').text(this.id + ' :: ' + this.event).appendTo(this.el);
         $('.logsv').append(this.el);
-        for (var attr in this.attrs) {
-            this.attrs[attr].render();
-        }
     };
 
     Ad.prototype.dispose = function() {
@@ -117,42 +119,78 @@
         if (!this.attrs[attr]) {
             var oAttr = new Attr(attr, value, this);
             this.attrs[attr] = oAttr;
-        } else {
+        }
+        if (value !== undefined) {
             this.attrs[attr].update(value);
         }
     };
 
     var Attr = function(attr, value, ad) {
+        this.updates = 0;
         this.len = 100;
         this.attr = attr;
         this.value = value;
         this.ad = ad;
         this.el = null;
+        this.container = null;
     };
 
     Attr.prototype.update = function(newValue) {
-        if (newValue != this.value) {
-            this.el.removeClass('inline');
-            var value = newValue || '---';
-            value = value.substr(0, this.len);
-            $('<span class="vvalue" />').text(value).appendTo(this.el);
+        if (newValue != this.value && this.el) {
+            if (this.updates === 0) {
+                this.el.empty();
+                if (this.value !== undefined) {
+                    this.el.removeClass('inline');
+                    $('<div class="vvalue" />').text(this.value).appendTo(this.el);
+                    this.updates++;
+                }
+            }
+            var value = newValue.substr(0, this.len);
+            $('<div class="vvalue" />').text(value).appendTo(this.el);
+
         }
         this.value = newValue;
+        if (!this.el) this.render();
     };
 
     Attr.prototype.render = function() {
         var attrEl = $('<div class="attr" />');
         var nameEl = $('<span class="name" />').text(this.attr);
 
-        var value = this.value || '---';
+        var value = this.value === undefined ?  '---' : this.value;
         value = value.substr(0, this.len);
         var valueEl = $('<div class="value inline" />').text(value);
         
         attrEl.append(nameEl);
         attrEl.append(valueEl);
-        this.ad.el.append(attrEl);
+
+        this.place(attrEl);
 
         this.el = valueEl;
+        this.container = attrEl;
+    };
+
+    Attr.prototype.place = function(attrEl) {
+        var attr = this.attr;
+        var attrs = this.ad.attrs;
+        var current = null;
+        var me = this;
+
+        foreachAttr(function(externalAttr) {
+            
+            if (attrs[externalAttr] && attrs[externalAttr].el) {
+                current = attrs[externalAttr];
+            }
+            if (externalAttr === attr) {
+                //debugger;
+                // insert
+                if (current) {
+                    attrEl.insertAfter(current.container);
+                } else {
+                    attrEl.appendTo(me.ad.el);
+                }
+            }
+        });
     };
 
     Attr.prototype.dispose = function() {

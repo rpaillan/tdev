@@ -1,29 +1,20 @@
 
 var http = require('http');
 var net = require('net');
+var url =  require('url');
+var port = 8080;
 var debugging = 0;
 var regex_hostport = /^([^:]+)(:([0-9]+))?$/;
 
-function getHostPortFromString(hostString, defaultPort) {
-    var host = hostString;
-    var port = defaultPort;
-    var result = regex_hostport.exec(hostString);
-    if (result != null) {
-        host = result[1];
-        if (result[2] != null) {
-            port = result[3];
-        }
-    }
-    return ([host, port]);
-}
 // handle a HTTP proxy request
-function httpUserRequest(userRequest, userResponse) {
-    console.log('userRequest', userRequest.url);
-    var httpVersion = userRequest['httpVersion'];
-    var hostport = getHostPortFromString(userRequest.headers['host'], 80);
+function httpHandler(req, res) {
+    capture(req);
+    if (debugging) console.log('req', req.url);
+    var httpVersion = req['httpVersion'];
+    var hostport = getHostPortFromString(req.headers['host'], 80);
     // have to extract the path from the requested URL
-    var path = userRequest.url;
-    result = /^[a-zA-Z]+:\/\/[^\/]+(\/.*)?$/.exec(userRequest.url);
+    var path = req.url;
+    result = /^[a-zA-Z]+:\/\/[^\/]+(\/.*)?$/.exec(req.url);
     if (result) {
         if (result[1].length > 0) {
             path = result[1];
@@ -34,90 +25,116 @@ function httpUserRequest(userRequest, userResponse) {
     var options = {
         'host': hostport[0],
         'port': hostport[1],
-        'method': userRequest.method,
+        'method': req.method,
         'path': path,
-        'agent': userRequest.agent,
-        'auth': userRequest.auth,
-        'headers': userRequest.headers
+        'agent': req.agent,
+        'auth': req.auth,
+        'headers': req.headers
     };
     var proxyRequest = http.request(options, function(proxyResponse) {
-        userResponse.writeHead(proxyResponse.statusCode, proxyResponse.headers);
+        res.writeHead(proxyResponse.statusCode, proxyResponse.headers);
         proxyResponse.on('data', function(chunk) {
-            userResponse.write(chunk);
+            res.write(chunk);
         });
         proxyResponse.on('end', function() {
-            userResponse.end();
+            res.end();
         });
     });
     proxyRequest.on('error', function(error) {
-        userResponse.writeHead(500);
-        userResponse.write("<h1>500 Error</h1>\r\n<p>Error was <pre>" + error + "</pre></p>\r\n</body></html>\r\n");
-        userResponse.end();
+        res.writeHead(500);
+        res.write("<h1>500 Error</h1>\r\n<p>Error was <pre>" + error + "</pre></p>\r\n</body></html>\r\n");
+        res.end();
     });
-    userRequest.addListener('data', function(chunk) {
+    req.addListener('data', function(chunk) {
         proxyRequest.write(chunk);
     });
-    userRequest.addListener('end', function() {
+    req.addListener('end', function() {
         proxyRequest.end();
     });
 }
 
-function main() {
-    var port = 8080; // default port if none on command line
-    // check for any command line arguments
-    for (var argn = 2; argn < process.argv.length; argn++) {
-        if (process.argv[argn] === '-p') {
-            port = parseInt(process.argv[argn + 1]);
-            argn++;
-            continue;
-        }
-        if (process.argv[argn] === '-d') {
-            debugging = 1;
-            continue;
-        }
-    }
-    if (debugging) {
-        console.log('server listening on port ' + port);
-    }
-    // start HTTP server with custom request handler callback function
-    var server = http.createServer(httpUserRequest).listen(port);
-    server.addListener('checkContinue', function(request, response) {
-        console.log(request);
-        response.writeContinue();
+
+function httpsHandler(req, socketRequest, bodyhead) {
+    capture(req);
+    if (debugging) console.log('req', req.url);
+    var url = req['url'];
+    var httpVersion = req['httpVersion'];
+    var hostport = getHostPortFromString(url, 443);
+    // set up TCP connection
+    var proxySocket = new net.Socket();
+    proxySocket.connect(parseInt(hostport[1], 10), hostport[0], function() {
+        if (debugging) console.log("ProxySocket: " + hostport[1] + " | " + hostport[0]);
+        proxySocket.write(bodyhead);
+        // tell the caller the connection was successfully established
+        socketRequest.write("HTTP/" + httpVersion + " 200 Connection established\r\n\r\n");
     });
-    // add handler for HTTPS (which issues a CONNECT to the proxy)
-    server.addListener('connect', function(request, socketRequest, bodyhead) {
-        console.log('request', request.url);
-        var url = request['url'];
-        var httpVersion = request['httpVersion'];
-        var hostport = getHostPortFromString(url, 443);
-        // set up TCP connection
-        var proxySocket = new net.Socket();
-        proxySocket.connect(parseInt(hostport[1]), hostport[0], function() {
-            console.log("ProxySocket: " + hostport[1] + " | " + hostport[0]);
-            proxySocket.write(bodyhead);
-            // tell the caller the connection was successfully established
-            socketRequest.write("HTTP/" + httpVersion + " 200 Connection established\r\n\r\n");
-        });
-        proxySocket.on('data', function(chunk) {
-            socketRequest.write(chunk);
-        });
-        proxySocket.on('end', function() {
-            socketRequest.end();
-        });
-        socketRequest.on('data', function(chunk) {
-            proxySocket.write(chunk);
-        });
-        socketRequest.on('end', function() {
-            proxySocket.end();
-        });
-        proxySocket.on('error', function(err) {
-            socketRequest.write("HTTP/" + httpVersion + " 500 Connection error\r\n\r\n");
-            socketRequest.end();
-        });
-        socketRequest.on('error', function(err) {
-            proxySocket.end();
-        });
-    }); // HTTPS connect listener
+    proxySocket.on('data', function(chunk) {
+        socketRequest.write(chunk);
+    });
+    proxySocket.on('end', function() {
+        socketRequest.end();
+    });
+    socketRequest.on('data', function(chunk) {
+        proxySocket.write(chunk);
+    });
+    socketRequest.on('end', function() {
+        proxySocket.end();
+    });
+    proxySocket.on('error', function(err) {
+        socketRequest.write("HTTP/" + httpVersion + " 500 Connection error\r\n\r\n");
+        socketRequest.end();
+    });
+    socketRequest.on('error', function(err) {
+        proxySocket.end();
+    });
 }
-main();
+
+function getHostPortFromString(hostString, defaultPort) {
+    var host = hostString;
+    var port = defaultPort;
+    var result = regex_hostport.exec(hostString);
+    if (result !== null) {
+        host = result[1];
+        if (result[2] !== null) {
+            port = result[3];
+        }
+    }
+    return ([host, port]);
+}
+
+// start HTTP server with custom request handler callback function
+var server = http.createServer(httpHandler);
+
+server.addListener('checkContinue', function(request, response) {
+    console.log(request);
+    response.writeContinue();
+});
+// add handler for HTTPS (which issues a CONNECT to the proxy)
+server.addListener('connect', httpsHandler); // HTTPS connect listener
+
+var filters = [];
+function capture(req) {
+    var parsed = url.parse(req.url, true);
+    var list = filters.forEach(function(filter) {
+        if (req.url.indexOf(filter.pattern) >= 0) {
+            var res = {
+                url: parsed.pathname,
+                query: parsed.query
+            };
+            filter.callback(res);
+        }
+    });
+}
+
+
+module.exports = {
+    listen: function(port) {
+        server.listen(port);
+    },
+    capture: function(pattern, callback) {
+        filters.push({
+            pattern: pattern,
+            callback: callback
+        });
+    }
+};

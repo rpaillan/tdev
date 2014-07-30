@@ -40,14 +40,15 @@ body {
 
 .logsv {
     border: 2px solid black;
-    vertical-align: top;
+    
 }
 
 .logsv .ad {
     border: 1px solid red;
     margin: 5px;
-    width: 300PX;
+    /* width: 300PX;*/
     display: inline-block;
+    vertical-align: top;
 }
 
 .logsv .ad .title {

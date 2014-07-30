@@ -3,7 +3,13 @@
     var $tdev = $(tdev);
 
     tdev.on = function(eventName, handler) {
-        $tdev.bind(eventName, handler);
+        $tdev.bind(eventName, function(event, data) {
+            try {
+                handler(event, data);
+            } catch(e) {
+                console.error(e.stack);
+            }
+        });
     };
 
     tdev.trigger = function(eventName, data) {

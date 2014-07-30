@@ -3,13 +3,21 @@ var fs = require("fs"),
     path = require('path'),
     Http = require('http'),
     Socketio = require('socket.io'),
-    Express = require('express');
-
+    Express = require('express'),
+    Proxy = require('./http-proxy2.js');
 
 var app = Express();
-var http = Http.Server(app);
-var http2 = Http.Server(app);
-var io = Socketio(http);
+
+var http = Http.createServer(app.handle.bind(app));
+var http2 = Http.createServer(app.handle.bind(app));
+var io = Socketio.listen(http).of('/megaio');
+
+io.on('connection', function(socket) {
+    console.log('a user connected');
+    socket.on('disconnect', function() {
+        console.log('user disconnected');
+    });
+});
 
 var c = fs.readFileSync('../config.json');
 var config = JSON.parse(c);
@@ -20,8 +28,7 @@ var swfHome = path.normalize(config.tag_project + '/src');
 config.tag_project = path.normalize(config.tag_project);
 config.sandbox = path.normalize(config.sandbox);
 
-
-console.log('config.sandbox -->',config.tag_project);
+console.log('config.tag_project -->',config.tag_project);
 console.log('config.sandbox -->',config.sandbox);
 console.log('swfHome -->', swfHome);
 
@@ -58,35 +65,39 @@ app.get('/scorecardresearch.com/rpc.flow', function(req, res) {
     sendJs(res, js);
 });
 
-app.get('/scorecardresearch.com/p', sendToViewer);
-app.get('/adxpose_inview', sendToViewer);
-app.get('/adxpose_engagement', sendToViewer);
+app.get('/scorecardresearch.com/p', respondOk);
+app.get('/adxpose_inview', respondOk);
+app.get('/adxpose_engagement', respondOk);
 
-io.on('connection', function(socket) {
-    console.log('a user connected');
-    socket.on('disconnect', function() {
-        console.log('user disconnected');
-    });
-});
 
 http.listen(config.server_port, function() {
     console.log('listening on *:' + config.server_port);
 });
+
 
 var additionalPort = parseInt(config.server_port, 10) + 1;
 http2.listen(additionalPort, function() {
     console.log('listening on *:' + additionalPort);
 });
 
+
 function sendJs(res, jsSource) {
     res.set('Content-Type', 'text/javascript');
     res.send(jsSource);
 }
 
-function sendToViewer(req, res) {
-    io.emit('onreq', {
-        url: req.originalUrl,
-        query: req.query
-    });
+function respondOk(req, res) {
     res.send(200);
 }
+
+function broadcast(data) {
+    io.emit('onreq', data);
+}
+
+Proxy.listen(8080);
+function proxySend (data) {
+    broadcast(data);
+}
+Proxy.capture('scorecardresearch.com/p', proxySend);
+
+
