@@ -140,28 +140,7 @@
         this.container = attrEl;
     };
 
-    Attr.prototype.place = function(attrEl) {
-        var attr = this.attr;
-        var attrs = this.ad.attrs;
-        var current = null;
-        var me = this;
-
-        foreachAttr(function(externalAttr) {
-            
-            if (attrs[externalAttr] && attrs[externalAttr].el) {
-                current = attrs[externalAttr];
-            }
-            if (externalAttr === attr) {
-                //debugger;
-                // insert
-                if (current) {
-                    attrEl.insertAfter(current.container);
-                } else {
-                    attrEl.appendTo(me.ad.el);
-                }
-            }
-        });
-    };
+    
 
     Attr.prototype.dispose = function() {
         if (this.el) {

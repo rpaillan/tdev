@@ -1,7 +1,8 @@
 (function(app, module){
 
     module.attrinfo = {
-        'ax_bl': 'bloquing request return code'
+        'ax_bl': 'bloquing request return code',
+        'ax_blt': 'RPC call latency time'
     };
 
     var Row = function(attr) {
@@ -26,9 +27,34 @@
         }
 
         tr.append(td);
-        module.view.body.append(tr);
+
+        this.place(tr);
+
         this.trEl = tr;
         this.tdEl = td;
+    };
+
+    Row.prototype.place = function(tr) {
+        // module.view.body.append(tr);
+        var attr = this.attr;
+        var current = null;
+        var me = this;
+
+        module.foreachAttr(function(i, externalAttr, row) {
+            
+            if (row && row.exist()) {
+                current = row;
+            }
+            if (externalAttr === attr) {
+                //debugger;
+                // insert
+                if (current) {
+                    tr.insertAfter(current.trEl);
+                } else {
+                    tr.appendTo(module.view.body);
+                }
+            }
+        });
     };
 
     Row.prototype.addCell = function _addCell_ (td) {
