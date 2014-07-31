@@ -6,11 +6,14 @@
     var ad_db_params = "browser name|timezoneOffset|navigator.platform|number of plugins|history length|build id|browser language|CPU class|System Language|User Language|Vendor|Mouse position|Scroll Offset|Value of SafeFrame's inViewPercentage API|<Opacity><Refresh value><Focus state><isReferrer><activeX enabled><java Enabled><Flash available><Mouse moved><Click><Press><Resize><scroll><z index><Pepper Flash enabled>";
     ad_db_params = ad_db_params.split('|');
     ad_db_params[ad_db_params.length - 1] = ad_db_params[ad_db_params.length - 1].replace(/></g, '|').replace('<', '').replace('>', '').split('|');
-    var colors = ["#9877ae", "#45bece", "#41d8ba", "#afabf9", "#83838b", "#5e9fbe", "#91c873", "#fe6baf", "#ffba00", "#ff6633", "#d84819", "#54a57a", "#d0ab99", "#fb8801", "#ffd35c"];
+    //var colors = ["#9877ae", "#45bece", "#41d8ba", "#afabf9", "#83838b", "#5e9fbe", "#91c873", "#fe6baf", "#ffba00", "#ff6633", "#d84819", "#54a57a", "#d0ab99", "#fb8801", "#ffd35c"];
+   
+    var colors = ['#63A69F', '#F2E1AC',  '#F2836B', '#F2594B', '#CD2C24', '#FF8000', '#FFD933', '#CCCC52', '#8FB359'];
+
     var colorIndex = 0;
     var colorMap = {};
 
-    var attrs = ['ns_ad_event', 'ns_ad_zm', 'ns_ad_db', 'ns__t', 'ns__p', 'c1', 'c2', 'c3', 'ns_ce_mod', 'c7', 'c8', 'ns_ad_sz', 'ns_type', 'ns_ad_sd', 'ns_ad_vw'];
+    var attrs = ['ns_ad_event', 'uid', 'ns_ad_id', 'ns_ad_zm', 'ns_ad_db', 'ns__t', 'ns__p', 'c1', 'c2', 'c3', 'ns_ce_mod', 'c7', 'c8', 'ns_ad_sz', 'ns_type', 'ns_ad_sd', 'ns_ad_vw'];
 
     function renderAdDb(addb) {
         if (addb.indexOf('|') == -1) return null;

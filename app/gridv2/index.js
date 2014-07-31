@@ -2,7 +2,19 @@
 
     var attrStore = module.attrStore =  app.attrStore = [];
     var attrStoreRow = module.attrStoreRow = {};
-    var adStore = module.adStore  ={};
+    var adStore = module.adStore = {};
+
+    module.eventColors = {
+        'load': '#F2E1AC',
+        'boot': '#63A69F',
+        'found': '#F2836B',
+        'qp1': '#F2594B',
+        'qp5': '#CD2C24',
+        'qp60': '#FF8000',
+        'hide': '#FFD933',
+        'show': '#CCCC52',
+        'unload': '#8FB359'
+    };
 
     module.foreachAttr = function _foreachAttr_ (f) {
         for (var i = 0, len = attrStore.length; i < len; i++) {

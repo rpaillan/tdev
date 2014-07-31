@@ -18,9 +18,8 @@ window.includeJs = function _includeJs_ (sSrc, sBase) {
 
     // modules
     include("gridv2/source.js");
-    //include("gridv/source.js");
     include("grid/source.js");
     include("test/source.js");
-    include("view/source.js");
+    //include("view/source.js");
 
 })();

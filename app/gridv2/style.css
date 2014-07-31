@@ -1,6 +1,6 @@
 .logsv2 {
     border-collapse: collapse;
-    font-size: 9px;
+    font-size: 10px;
     width: 100%;
 }
 .logsv2 th {
@@ -18,21 +18,19 @@
 .logsv2 td:first-child .attr {
     text-transform: uppercase;
     font-weight: bold;
+    font-size: 11px;
 }
 
 .undefined {
     background-color: #999;
 }
 
-.revision span {
+.revision .revision-item {
     background-color: orange;
     display: inline-block;
     border-radius: 3px;
     padding: 1px 5px;
     margin-bottom: 2px;
     margin-right: 3px;
-}
-
-.revision-item {
     word-break: break-all;
 }

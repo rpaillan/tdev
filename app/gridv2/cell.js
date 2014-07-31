@@ -25,9 +25,7 @@
     Cell.prototype.update = function(newValue) {
         if (this.tdEl) {
             if (newValue !== undefined && newValue !== this.value) {
-                var el = $('<span class="revision-item" />').text(newValue);
-                this.tdEl.append(el);
-                this.count++;
+                this.renderRevision(newValue);
                 this.value = newValue;
             }
         } else {
@@ -41,19 +39,25 @@
         if (this.count === 1) {
             this.tdEl.removeClass('undefined');
         }
-        if (this.count === 2) {
-            this.tdEl.addClass('revision');
-        }
     };
 
     Cell.prototype.render = function() {
-        var td = $('<td />');
+        var td = $('<td class="revision" />');
         this.row.addCell(td);
         this.tdEl = td;
         if (this.value !== undefined) {
-            td.append($('<span class="revision-item" />').text(this.value));
-            this.count++;
+            this.renderRevision(this.value);
         }
+    };
+
+    Cell.prototype.renderRevision = function(value) {
+        var color = 'white';
+        if (module.eventColors[this.ad.event]) {
+            color = module.eventColors[this.ad.event];
+        }
+
+        this.tdEl.append($('<span class="revision-item" />').text(value).css('backgroundColor', color));
+        this.count++;
     };
 
     module.Cell = Cell;
