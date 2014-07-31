@@ -14,7 +14,7 @@ var io = Socketio.listen(http).of('/megaio');
 io.on('connection', function(socket) {
     console.log('a user connected');
 
-    socket.emit('files:list', files);
+    socket.emit('files:load', files);
 
     socket.on('replaceFiles', function(data) {
         updateReplaceProxy(data);
@@ -52,7 +52,7 @@ console.log('swfHome -->', swfHome);
 var _builder = require("./builder.js");
 _builder.setConfig(config);
 
-app.use("/lib", Express.static(swfHome));
+app.use("/sandbox/lib", Express.static(swfHome));
 app.use("/app", Express.static(appHome));
 app.use("/sandbox", Express.static(config.sandbox));
 
@@ -160,6 +160,8 @@ function updateReplaceProxy(data) {
             }
         }
     });
+
+    io.emit('files:update', files);
 }
 
 Proxy.capture('scorecardresearch.com/p', proxySend);

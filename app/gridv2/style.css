@@ -8,11 +8,16 @@
     background-color: #bbb;
 }
 
+
 .logsv2 th {
-    text-transform: uppercase;
     border: 1px solid black;
     padding:4px;
     font-weight: bold;
+    text-align: left;
+}
+
+.logsv2 th .title {
+    text-transform: uppercase;
 }
 
 .logsv2 td {
@@ -40,3 +45,68 @@
     word-break: break-all;
 }
 
+
+
+.sticky-info {
+    padding: 5px;
+    border-radius: 5px;
+    height: 50px;
+    background-color: white;
+}
+
+.is-sticky .sticky-info {
+
+}
+
+
+.sticky-info  .icon-set {
+    height: 16px;
+}
+
+.sticky-info .icon {
+    display: inline-block;
+    width: 16;
+    height: 16;
+    margin-right: 4px;
+}
+
+.sticky-info .icon.text {
+    border: 1px solid black;
+    font-size: 9px;
+}
+
+
+.sticky-info .icon.chrome {
+    background-image: url('../images/chrome_16x16.png');
+}
+.sticky-info .icon.firefox {
+    background-image: url('../images/firefox_16x16.png');
+}
+.sticky-info .icon.safari {
+    background-image: url('../images/safari_16x16.png');
+}
+.sticky-info .icon.msie {
+    background-image: url('../images/internet-explorer_16x16.png');
+}
+
+.sticky-info .icon.macintel {
+    background-image: url('../images/mac_16x16.png');
+}
+.sticky-info .icon.win32 {
+    background-image: url('../images/windows_16x16.jpg');
+}
+
+.sticky-info .events {
+    margin-top: 5px;
+    font-size: 9px;
+    overflow: auto;
+    word-break: break-all;
+}
+
+.sticky-info .events .event {
+    display: inline-block;
+    border-radius: 3px;
+    padding: 1px 5px;
+    margin-bottom: 2px;
+    margin-right: 3px;
+}

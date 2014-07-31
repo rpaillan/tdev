@@ -13,7 +13,8 @@
 
 
     //var ad_db_params = "browser name|timezoneOffset|navigator.platform|number of plugins|history length|build id|browser language|CPU class|System Language|User Language|Vendor|Mouse position|Scroll Offset|Value of SafeFrame's inViewPercentage API|<Opacity><Refresh value><Focus state><isReferrer><activeX enabled><java Enabled><Flash available><Mouse moved><Click><Press><Resize><scroll><z index><Pepper Flash enabled>";
-    var ad_db_params = "browser.name|timezone.offset|navigator.platform|number.of.plugins|history.length|build.id|browser.language|CPU.class|System.Language|User.Language|Vendor|Mouse.position|Scroll.Offset|in.View.Percentage|<Opacity><Refresh.value><Focus.state><isReferrer><activeX.enabled><java.Enabled><Flash.available><Mouse.moved><click><press><resize><scroll><zindex><pepper.flash.enabled>";
+    //var ad_db_params = "browser.name|timezone.offset|navigator.platform|number.of.plugins|history.length|build.id|browser.language|CPU.class|System.Language|User.Language|Vendor|Mouse.position|Scroll.Offset|in.View.Percentage|<Opacity><Refresh.value><Focus.state><isReferrer><activeX.enabled><java.Enabled><Flash.available><Mouse.moved><click><press><resize><scroll><zindex><pepper.flash.enabled>";
+    var ad_db_params = "browser.name|timezone.offset|navigator.platform|number.of.plugins|history.length|build.id|browser.language|cpu.class|system.language|user.language|vendor|mouse.position|scroll.offset|in.view.percentage|<opacity><refresh.value><focus.state><isreferrer><activex.enabled><java.enabled><flash.available><mouse.moved><click><press><resize><scroll><zindex><pepper.flash.enabled>";
 
     ad_db_params = ad_db_params.split('|');
     ad_db_params[ad_db_params.length - 1] = ad_db_params[ad_db_params.length - 1].replace(/></g, '|').replace('<', '').replace('>', '').split('|');

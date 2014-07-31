@@ -1,38 +1,57 @@
 (function(app){
 
-    app.io.on('files:list', function(data) {
+    var wasInit = false;
+    app.io.on('files:load', function(data) {
         console.log('files:list data -->', data);
         app.files = data;
+        if (wasInit) render (app.files);
+    });
+
+    app.io.on('files:update', function() {
+        console.log('files:list data -->', data);
+        app.files = data;
+        render (app.files);
     });
 
     app.on('app-init', function() {
+
+        var container = $('.overwrite');
+        container.delegate('input', 'click', function(e) {
+            var input = $(e.target);
+            var isChecked = input.is(':checked');
+            var value = input.attr('name');
+            if (value) {
+                var item = app.files[value];
+                if (item) {
+                    item.enabled = isChecked;
+                    updateServer(item);
+                }
+            }
+        });
+
         if (app.files) render(app.files);
+        wasInit = true;
     });
 
      function render (files) {
         var container = $('.overwrite');
+        container.empty();
         for (var fileName in files) {
             var item = files[fileName];
-            (function(item) {
-                var ch = $('<input type="checkbox" />');
-                ch.attr('value', item.file);
-                ch.attr('name', item.file);
 
-                if (item.enabled) {
-                    ch.attr('checked', 'checked');
-                }
+            var ch = $('<input type="checkbox" />');
+            ch.attr('value', item.file);
+            ch.attr('name', item.file);
 
-                ch.appendTo(container);
+            if (item.enabled) {
+                ch.attr('checked', 'checked');
+            }
 
-                var label = $('<span />').text(item.file);
-                label.appendTo(container);
+            ch.appendTo(container);
 
-                ch.on('click', function(e) {
-                    var isChecked = $(e.target).is(':checked');
-                    item.enabled = isChecked;
-                    updateServer(item);
-                });
-            })(item);
+            var label = $('<span />').text(item.file);
+            label.appendTo(container);
+
         }
     }
 
