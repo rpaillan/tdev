@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <style type="text/css" media="screen">
+
+    </style>
+    <script type="text/javascript">
+        window.onload = function() {
+            var doc = document;
+            var b1 = doc.getElementById('b1');
+
+            var store = {};
+
+            for (var attr in b1) {
+                var type = typeof b1[attr];
+                if (type !== 'function' &&
+                    type !== 'object') {
+                    if (!store[attr]) store[attr] = b1[attr];
+                }
+            }
+
+            setInterval(function() {
+                console.log('analize')
+                for (var attr in b1) {
+                    var type = typeof b1[attr];
+                    if (type !== 'function' &&
+                        type !== 'object') {
+
+                        if (!store[attr]) store[attr] = b1[attr];
+
+                        if (store[attr] != b1[attr]) {
+                            console.log('attr changed -->');
+                        } 
+                    }
+                }
+            }, 2000);
+        };
+    </script>
+</head>
+<body>
+    <div class="con">
+        <button id="b1">button_on_iframe</button>
+    </div>
+</body>
+</html>

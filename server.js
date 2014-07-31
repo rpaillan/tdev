@@ -1,10 +1,9 @@
-
 var fs = require("fs"),
     path = require('path'),
     Http = require('http'),
     Socketio = require('socket.io'),
     Express = require('express'),
-    Proxy = require('./http-proxy2.js');
+    Proxy = require('./http-proxy.js');
 
 var app = Express();
 
@@ -14,30 +13,48 @@ var io = Socketio.listen(http).of('/megaio');
 
 io.on('connection', function(socket) {
     console.log('a user connected');
+
+    socket.emit('files:list', files);
+
+    socket.on('replaceFiles', function(data) {
+        updateReplaceProxy(data);
+    });
+
     socket.on('disconnect', function() {
         console.log('user disconnected');
     });
 });
 
-var c = fs.readFileSync('../config.json');
-var config = JSON.parse(c);
+var config = {
+    "server_port": 3000,
+    "tag_project": "C:/workspace/tag/ie11",
+    "sandbox": "/sandbox"
+};
+
+try {
+    var externalConfigStr = fs.readFileSync('../config.json');
+    var externalConfig = JSON.parse(externalConfigStr);
+    for (var attr in externalConfig) {
+        config[attr] = externalConfig[attr];
+    }
+} catch (e) {}
 
 // normalize
 var appHome = path.normalize(__dirname + '/app');
 var swfHome = path.normalize(config.tag_project + '/src');
 config.tag_project = path.normalize(config.tag_project);
-config.sandbox = path.normalize(config.sandbox);
+config.sandbox = path.normalize(__dirname + config.sandbox);
 
-console.log('config.tag_project -->',config.tag_project);
-console.log('config.sandbox -->',config.sandbox);
+console.log('config.tag_project -->', config.tag_project);
+console.log('config.sandbox -->', config.sandbox);
 console.log('swfHome -->', swfHome);
 
 var _builder = require("./builder.js");
 _builder.setConfig(config);
 
 app.use("/lib", Express.static(swfHome));
-app.use("/sandbox", Express.static(config.sandbox));
 app.use("/app", Express.static(appHome));
+app.use("/sandbox", Express.static(config.sandbox));
 
 app.get('/b.voicefive.com/c2/:c2/rs.js', function(req, res) {
     var c2 = req.params.c2;
@@ -79,6 +96,12 @@ function sendJs(res, jsSource) {
     res.send(jsSource);
 }
 
+function sendJs2(res, jsSource) {
+    res.setHeader('Content-Type', 'text/javascript');
+    res.write(jsSource);
+    res.end();
+}
+
 function respondOk(req, res) {
     res.send(200);
 }
@@ -91,10 +114,52 @@ Proxy.listen(8080, function() {
     console.log('proxy listening on *:8080');
 });
 
-function proxySend (data) {
+function proxySend(data) {
     broadcast(data);
 }
 
+function genericHandler (req, res, jsFile) {
+    console.log('[REPLACED] ', req.url);
+    var rsSource = _builder.buildJs(jsFile);
+    sendJs2(res, rsSource);
+}
+
+var files = {
+    'rs.js': {
+        file: 'rs.js',
+        enabled: false,
+        pattern: '*/c2/:c2/rs.js',
+        handler: function(req, res) {
+            console.log('[REPLACED] ', req.url);
+            var c2 = req.params.c2;
+            var rsSource = _builder.buildRsJs(c2);
+            sendJs2(res, rsSource);
+        }
+    },
+    'vce_st.js': {
+        file: 'vce_st.js',
+        enabled: false,
+        pattern: '*/vce_st.js',
+        handler: function(req, res) {
+            genericHandler(req, res, 'vce_st.js');
+        }
+    }
+};
+
+function updateReplaceProxy(data) {
+    data.forEach(function(dataItem) {
+        var file = files[dataItem.file];
+        if (file) {
+            if (dataItem.enabled !== file.enabled) {
+                file.enabled = dataItem.enabled;
+                if (file.enabled) {
+                    Proxy.replaceFile(file);
+                } else {
+                    Proxy.removeReplaceFile(file);
+                }
+            }
+        }
+    });
+}
+
 Proxy.capture('scorecardresearch.com/p', proxySend);
-
-

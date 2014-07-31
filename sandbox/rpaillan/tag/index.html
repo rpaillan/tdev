@@ -1,0 +1,38 @@
+<!DOCTYPE>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>AdEffx Test Webpage</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+	<style type="text/css">
+		.banner2 {
+			margin-top: 900px;
+		}
+        .fill {
+            height: 2000px;
+            width: 200px;
+        }
+        .value { font-weight: bold; }
+        
+	</style>
+    <script type="text/javascript">
+        document.title = 'page' + Math.floor((Math.random() * 100) + 1);
+        /*
+        setTimeout(function() {
+            window.location.reload(true);
+        }, 8000);
+*/
+
+    </script>
+</head>
+<body>
+    
+    <p>Cross-domain iframe</p>
+    <iframe width="800" src="http://csclrpaillan.office.comscore.com:3001/sandbox/rpaillan/tag/index_child2.html"></iframe>
+    <p>Friendly iframe</p>
+    <iframe width="800" src="http://csclrpaillan.office.comscore.com:3000/sandbox/rpaillan/tag/index_child.html"></iframe>
+    <div class="fill">
+        fill
+    </div>
+</body>
+</html>

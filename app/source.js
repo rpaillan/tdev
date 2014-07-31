@@ -15,6 +15,7 @@ window.includeJs = function _includeJs_ (sSrc, sBase) {
     include("namespace.js");
     include("main.js");
     include("io.js");
+    include("overwrite.js");
 
     // modules
     include("gridv2/source.js");

@@ -28,7 +28,7 @@
                     var subUnitA = value.split('');
                     value = '';
                     unitName.forEach(function(subUnitName, j) {
-                        req.query['ns_ad_db' + '__' + i + '__'+ j + '_' + subUnitName] = subUnitA[j];
+                        req.query['ns_ad_db' + '__' + i + '_'+ j + '_' + subUnitName] = subUnitA[j];
                     });
                 } else {
                    req.query['ns_ad_db' + '__' + i + '_' + unitName] = value;
