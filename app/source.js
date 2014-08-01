@@ -21,6 +21,6 @@ window.includeJs = function _includeJs_ (sSrc, sBase) {
     include("gridv2/source.js");
     include("grid/source.js");
     include("test/source.js");
-    //include("view/source.js");
+    include("view/source.js");
 
 })();

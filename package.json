@@ -19,6 +19,7 @@
     "homepage": "https://github.com/rpaillan/tdev",
     "dependencies": {
         "express": "",
-        "socket.io": ""
+        "socket.io": "",
+        "url-pattern"
     }
 }
