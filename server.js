@@ -80,6 +80,37 @@ app.get('/adxpose_inview', respondOk);
 app.get('/adxpose_engagement', respondOk);
 
 
+app.get('/', function(req, res) {
+
+    var html = '<html />';
+    html += '<a href="app/viewer.html"> Viewer </a> <br /><br />';
+
+    function walk (dir) {
+        results = [];
+        var list = fs.readdirSync(dir);
+        list.forEach(function(file) {
+            file = dir + '/' + file;
+            var stat = fs.statSync(file);
+            if (stat && stat.isDirectory()) {
+                results = results.concat(walk(file));
+            } else {
+                if (file.indexOf('.html') > 0) {
+                    results.push(file);
+                }
+            }
+        });
+        return results;
+    }
+
+    results = walk('sandbox');
+
+    html += results.map(function(file){
+        return '<a href="'+file+'">' + file + '</a>';
+    }).join('<br />');
+
+    res.send(html);
+});
+
 http.listen(config.server_port, function() {
     console.log('listening on *:' + config.server_port);
 });

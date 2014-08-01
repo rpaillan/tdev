@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <style type="text/css" media="screen">
+        .container {
+            padding: 100px;
+            padding-bottom: 2000px;
+        }
+        .fixed {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        
+        window.onload = function() {
+            var nice = document.getElementById('link');
+            var button = document.getElementById('tfocus');
+
+            nice.addEventListener('focus', function(e) {
+                console.log('focus e -->',e);
+                
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                return false
+            }, false);
+
+            nice.addEventListener('scroll', function(e) {
+                console.log('scroll e -->',e);
+            });
+            
+            button.addEventListener('click', function() {
+                console.log(nice);
+                nice.focus();
+            }, false);
+        }
+
+
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <a id="link" href="#">nice</a>
+    </div>
+
+    <div class="fixed">
+        <button id="tfocus">focus</button>
+    </div>
+
+</body>
+</html>
