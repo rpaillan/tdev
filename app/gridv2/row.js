@@ -48,7 +48,7 @@
         'ns_ad_ck': { desc: 'Click Marker', alt: 'click marker which is included when ad has been clicked'},
         'ns_ad_pid': { desc: 'Page ID', alt: 'page ID (a "page load" timestamp) which is included for each event'},
         'ns_ad_rf': { desc: 'Outer Referer', alt: 'the referrer of the outer frame only present if the following applies: the tag is served in an iframe, the referrer of the outer iframe can be detected, the domain of the referrer of the outer iframe is different from the domain of the iframe that contains the tag, limit is 250 characters'},
-        'ns_ad_vw': { desc: 'Viewport Dimension', alt: 'viewport dimensions'},
+        'ns_ad_vw': { desc: 'Viewport Dimension', alt: 'viewport dimensions, RP: it take the closest iframe/viewport dimesion'},
         'ns_ad_sc': { desc: 'Scrolled Offset', alt: 'scrolled offset'},
 
         'ns_ad_id': { desc: 'Ad ID', alt: 'ad ID'},

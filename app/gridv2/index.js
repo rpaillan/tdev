@@ -3,6 +3,7 @@
     var attrStore = module.attrStore =  app.attrStore = [];
     var attrStoreRow = module.attrStoreRow = {};
     var adStore = module.adStore = {};
+    var adStoreA = [];
 
     module.eventColors = {
         'load': '#F2E1AC',
@@ -79,22 +80,31 @@
         var q = req.query,
             id = q.ns__p || q.ns__t;
 
+        updatePreviousAds();
+
         var ad = new module.Ad(id);
         ad.render();
 
         ad.update(req);
         console.log("NEW", id, q.ns_ad_event);
+
+        adStoreA.push(ad);
         adStore[id] = ad;
     }
 
     function appendReq(req) {
         var q = req.query;
         var id = q.ns__p || q.ns__t;
+
+        updatePreviousAds();
+
         if (adStore[id]) {
             var ad = adStore[id];
             if (q.ns_ad_event == 'unload') {
                 console.log("DELETE", id, q.ns_ad_event);
                 ad.dispose();
+
+                adStoreA.splice(adStoreA.indexOf(ad), 1);
                 delete adStore[id];
             } else {
                 console.log("UPDATE", id, q.ns_ad_event);
@@ -103,7 +113,13 @@
         }
     }
 
-    
+    function updatePreviousAds() {
+        adStoreA.forEach(function(ad) {
+            module.foreachAttr(function(i, attr, row) {
+                ad.updateAttr(i, attr, row, undefined);
+            });
+        });
+    }
 
     
 
