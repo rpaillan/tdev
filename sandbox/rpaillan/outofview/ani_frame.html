@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>requestAnimationFrame</title>
+    <style type="text/css" media="screen">
+        * {
+            border: 0;
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            border: 1px solid red;
+        }
+    </style>
+    <script type="text/javascript">
+
+        var Ani = function(name, top, left) {
+            this.name = name;
+            this.canvas = null;
+            this.context = null;
+            this.toggle = false;
+            this.w = 70;
+            this.h = 70;
+            this.l = left;
+            this.t = top;
+            this.count = 0;
+
+            this.init();
+            this.animate(0);
+        }
+
+        Ani.prototype.init = function() {
+            this.canvas = document.createElement('canvas');
+            this.canvas.width = this.w;
+            this.canvas.height = this.h;
+            this.canvas.style.position = 'fixed';
+            this.canvas.style.left = this.l + 'px';
+            this.canvas.style.top = this.t + 'px';
+            this.context = this.canvas.getContext('2d');
+            document.body.appendChild( this.canvas );
+            var me = this;
+            setInterval(function() {
+                window.top.postMessage({
+                    'metric': me.name + '_count',
+                    'value': me.count
+                }, '*');
+                me.count = 0;
+            }, 1000);
+        };
+
+        Ani.prototype.animate = function (t) {
+            var me = this;
+            requestAnimationFrame(function(t) {
+                me.animate(t);
+            });
+            this.render(t);
+            this.count++;
+        };
+
+        Ani.prototype.render = function(t) {
+            var time = new Date().getTime() * 0.008;
+            var x = Math.sin( time ) * this.w/3 + this.w/2;
+            var y = Math.cos( time * 0.9 ) * this.h/3 + this.h/2;
+            this.toggle = !this.toggle;
+            this.context.fillStyle = this.toggle ? 'rgb(200,200,20)' :  'rgb(20,20,200)';
+            this.context.beginPath();
+            this.context.arc( x, y, 10, 0, Math.PI * 2, true );
+            this.context.closePath();
+            this.context.fill();
+        };;
+
+        window.onload = function() {
+            var a = [];
+            a.push(new Ani('ani1', 0, 0));
+            a.push(new Ani('ani2', 0, 100));
+            a.push(new Ani('ani3', 75, 0));
+            a.push(new Ani('ani4', 75, 100));
+            window._ANI = a;
+        };
+
+        
+
+    </script>
+</head>
+<body>
+    <img src="http://placekitten.com/200/150"/>
+</body>
+</html>

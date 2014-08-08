@@ -83,7 +83,10 @@ app.get('/adxpose_engagement', respondOk);
 app.get('/', function(req, res) {
 
     var html = '<html />';
-    html += '<a href="app/viewer.html"> Viewer </a> <br /><br />';
+    html += '<a href="app/viewer.html">Viewer</a><br />';
+    html += '<a href="http://tagqa.office.comscore.com/vce_tests/single_truth_modular_adeffx_qa/">QA Test</a><br /><br />';
+
+    
 
     function walk (dir) {
         results = [];

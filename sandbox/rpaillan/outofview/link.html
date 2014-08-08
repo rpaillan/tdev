@@ -10,48 +10,90 @@
             padding-bottom: 2000px;
         }
         .fixed {
-            position: fixed;
-            top: 10px;
-            left: 10px;
+            width: 170px;
+            height: 170px;
+        }
+
+        .fixed button {
+            margin-top: 85px;
+            margin-left: 85px;
         }
     </style>
 
     <script type="text/javascript">
         
         window.onload = function() {
-            var nice = document.getElementById('link');
-            var button = document.getElementById('tfocus');
+            new Detector(document.getElementById('tfocus'));
+        }
 
-            nice.addEventListener('focus', function(e) {
-                console.log('focus e -->',e);
-                
+        var Detector = function(el) {
+            this.el = el;
+            this.tId;
+            this.init();
+        };
+
+        Detector.prototype.init = function() {
+            var me = this;
+
+            this.tId = setInterval(function() {
+                me.check();
+            }, 2000);
+
+            
+            this.el.addEventListener('focus', function(e) {
                 e.stopPropagation();
                 e.stopImmediatePropagation();
                 e.preventDefault();
+                return false;
+            }, true);
+
+            this.el.addEventListener('click', function(e) {
+                console.log('click');
+
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                e.preventDefault();
+
+                setTimeout(function() {
+                    //me.el.blur();
+                }, 300);
+
                 return false
-            }, false);
+            }, true);
 
-            nice.addEventListener('scroll', function(e) {
+            document.addEventListener('scroll', function(e) {
                 console.log('scroll e -->',e);
-            });
-            
-            button.addEventListener('click', function() {
-                console.log(nice);
-                nice.focus();
-            }, false);
-        }
 
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+
+                e.preventDefault();
+
+                setTimeout(function() {
+                    //window.scrollTo(85, 85);
+                }, 500);
+                return false;
+            }, true);
+        };
+
+        Detector.prototype.check = function() {
+            window.top = null;
+            window.parent = null;
+            this.el.scrollIntoView();
+
+            /*
+            scrollByLines: function scrollByLines() { [native code] }
+scrollByPages: function scrollByPages() { [native code] }
+scrollIntoView: function scrollIntoView() { [native code] }
+scrollIntoViewIfNeeded:
+*/
+        };
 
     </script>
 </head>
 <body>
-
-    <div class="container">
-        <a id="link" href="#">nice</a>
-    </div>
-
     <div class="fixed">
-        <button id="tfocus">focus</button>
+        <button id="tfocus">f</button>
     </div>
 
 </body>

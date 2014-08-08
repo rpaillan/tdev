@@ -32,6 +32,9 @@
         module.view.body = module.view.table.find('.body');
 
         module.view.table.appendTo(tab);
+
+        attrStore.push(module.Screen.attr);
+        attrStoreRow[module.Screen.attr] = new module.Row(module.Screen.attr);
     });
 
 

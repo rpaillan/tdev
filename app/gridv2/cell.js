@@ -23,6 +23,11 @@
     };
 
     Cell.prototype.update = function(newValue) {
+
+        if (this.attr === module.Screen.attr) {
+            return this.updateScreen();
+        } 
+
         if (this.tdEl) {
             if (newValue !== undefined && newValue !== this.value) {
                 this.renderRevision(newValue);
@@ -58,6 +63,19 @@
 
         this.tdEl.append($('<span class="revision-item" />').text(value).css('backgroundColor', color));
         this.count++;
+    };
+
+    Cell.prototype.updateScreen = function() {
+        if (!this._screen) {
+            this.render();
+            this.tdEl.addClass('undefined');
+            this._screen = new module.Screen(this.tdEl, 300, 200, this.ad);
+        }
+        try {
+            this._screen.update();
+        } catch(e) {
+            console.log(e.stack);
+        }
     };
 
     module.Cell = Cell;

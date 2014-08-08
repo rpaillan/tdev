@@ -11,5 +11,6 @@
     include("ad.js");
     include("row.js");
     include("cell.js");
+    include("screen.js");
 
 })();

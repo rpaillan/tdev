@@ -10,6 +10,15 @@
             padding-bottom: 2000px;
         }
     </style>
+    <script type="text/javascript">
+
+        function audiotu(track) {
+            var currTime = Math.floor(track.currentTime).toString(); 
+            var duration = Math.floor(track.duration).toString();
+
+            console.log(currTime, duration);
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -17,7 +26,9 @@
           Your browser does not support the <code>video</code> element.
         </video>
 
-        <audio src="chicaelectrica.mp3" preload="auto" autoplay controls loop></audio>
+        <audio src="chicaelectrica.mp3" preload="auto" autoplay controls loop ontimeupdate="audiotu(this)"></audio>
+
+        <span id="tracktime">0 / 0</span>
     </div>
 
 </body>

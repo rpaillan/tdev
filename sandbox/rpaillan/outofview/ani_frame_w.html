@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>requestAnimationFrame</title>
+    <link rel="stylesheet" type="text/css" href="">
+    <script src="info.js" type="text/javascript" charset="utf-8"></script>
+    <style type="text/css" media="screen">
+        .con {
+            padding: 250px;
+        }
+    </style>
+    <script type="text/javascript">
+        window.addEventListener("message", function(e) {
+            Info.log(e.data.metric, e.data.value);
+        }, false);
+    </script>
+</head>
+<body>
+    <div class="con">
+        <iframe scrolling="no" width="200" height="150" border="1"  src="http://localhost:3001/sandbox/rpaillan/outofview/ani_frame.html"></iframe>
+    </div>
+</body>
+</html>

@@ -7,7 +7,7 @@
    
     function render(req) {
         var q = req.query;  
-        if (['found', 'load', 'boot', 'unload'].indexOf(q.ns_ad_event)) {
+        if (['load', 'boot', 'unload'].indexOf(q.ns_ad_event)) {
             var canvas = document.getElementById('canvas');
             tdev.AdVisualizer.draw(canvas, req.query);
         }
