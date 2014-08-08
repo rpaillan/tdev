@@ -5,34 +5,46 @@
         this.maxWidth = maxWidth;
         this.maxHeight = maxHeight;
         this.ad = ad;
+
+        this.idx = 0
         
         this.boxes = {};
         this.showContainer(el);
+        this.colors = [
+            '#52656B',
+            '#FF3B77',
+            '#CDFF00',
+            '#FFFFFF'
+        ];
 
     };
 
     Screen.attr = 'zzScreen';
 
-    Screen.prototype.doStatic = function(el, box) {
+    Screen.prototype.doStatic = function(el, panel) {
+        var box = panel.box;
         el.css({
             'position': 'absolute',
             'top': box._t,
             'left': box._l,
             'width': box._w,
             'height': box._h,
-            'border': '1px solid white'
+            'border': '1px solid ' + panel.color,
+            'backgroundColor': panel.color,
+            'opacity': '0.5'
         });
         return el;
     };
 
-    Screen.prototype.doStaticText = function(el, box) {
+    Screen.prototype.doStaticText = function(el, panel) {
+        var box = panel.box;
         el.css({
             'position': 'absolute',
             'top': box._t,
             'left': box._l,
             'color': 'white',
             'padding': '2px',
-            'fontSize': '9px'
+            'fontSize': '10px'
         });
         return el;
     };
@@ -44,7 +56,8 @@
         div0.css({
             'position': 'static',
             'width': box.w,
-            'height': box.h
+            'height': box.h,
+            'margin': '4px'
         });
         div1.css({
             'position': 'relative',
@@ -58,8 +71,21 @@
         this.el0 = div0;
     };
 
+    Screen.prototype.updateText = function(el, panel) {
+        var box = panel.box;
+        var txt = panel.name + ' ' + box.w + 'x' + box.h + ' (' + box.l + 'x' + box.t + ')';
+
+        if (panel.name === 'screen') {
+            txt += ', zoom: ' + (this.get('ns_ad_zm') || '100') + '%';
+        }
+        if (panel.name === 'creative') {
+            txt += ', vis: ' + this.get('ns_ad_vi') + '%';
+        }
+        el.text(txt);
+    };
+
     Screen.prototype.update = function() {
-        this.renderBox("screen", [0, 0], "ns_ad_vsd");
+        this.renderBox("screen", "ns_ad_vsp", "ns_ad_vsd");
         this.renderBox("viewport", "ns_ad_vvp", "ns_ad_vvd");
         this.renderBox("creative", "ns_ad_vap", "ns_ad_vad");
         this.renderAllBoxes();
@@ -73,7 +99,11 @@
             el = $('<div />');
             elText = $('<div />');
             this.boxes[name] = {
-                el: el, box: null, elText: elText
+                color: this.colors[this.idx++ % this.colors.length],
+                name: name,
+                el: el,
+                box: null,
+                elText: elText
             };
             this.el.append(el);
             this.el.append(elText);
@@ -96,7 +126,7 @@
 
         this.boxes[name].box = box;
 
-        elText.text(name + ' ' + box.w + 'x' + box.h);
+        elText.text(name + ' ' + box.w + 'x' + box.h + ' (' + box.l + 'x' + box.t + ')');
     };
 
     Screen.prototype.renderAllBoxes = function() {
@@ -119,8 +149,9 @@
         for (boxName in this.boxes) {
             panel = this.boxes[boxName];
             this.scaleBox(panel.box, scale);
-            this.doStatic(panel.el, panel.box);
-            this.doStaticText(panel.elText, panel.box);
+            this.doStatic(panel.el, panel);
+            this.doStaticText(panel.elText, panel);
+            this.updateText(panel.elText, panel);
             console.log('updating, boxName, panel.box -->',boxName, panel.box);
         }
     };
@@ -141,7 +172,7 @@
             values = values.split('x').map(function(val) { return parseInt(val, 10); });
             return values;
         }
-        return [10, 10];
+        return [0, 0];
     };
 
     Screen.prototype.get = function(attr) {

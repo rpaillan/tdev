@@ -1,0 +1,6 @@
+document.title = "AdEffx Image Banner campaign";
+document.write("<a href=\"http://adserver.adtechus.com/adlink/5358/2390752/0/225/AdId=3739295;BnId=1;itime=518460727;kr14313=1471314;kp=196942;nodecode=yes;link=http://comscore.com/\" target=\"_blank\"><img src=\"http://aka-cdn-ns.adtechus.com/apps/159/Ad3739295St3Sz225Sq21996364V6Id1/728x90.jpg\" border=\"0\" height='90' width='728'></a>\n");
+document.write("<scr"+"ipt src=\"http://b.voicefive.com/c2/15770633/rs.js#c1=3&amp;c3=2816501&amp;c4=21996364&amp;c5=3739295_170437&amp;c6=&amp;c10=&amp;c11=170437&amp;c13=225&amp;c16=adtech\">\n");
+document.write("</scr"+"ipt>\n");
+
+
